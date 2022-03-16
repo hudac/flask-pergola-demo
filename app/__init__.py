@@ -2,46 +2,31 @@
 import os
 import sqlalchemy
 from flask import Flask
-from yaml import load, Loader
-
+from app import migrate
 
 
 def init_connection_engine():
-    """ initialize database setup
-    Takes in os variables from environment if on GCP
-    Reads in local variables that will be ignored in public repository.
-    Returns:
-        pool -- a connection to GCP MySQL
-    """
-
-
-    # detect env local or gcp
-    if os.environ.get('GAE_ENV') != 'standard':
-        try:
-            variables = load(open("app.yaml"), Loader=Loader)
-        except OSError as e:
-            print("Make sure you have the app.yaml file setup")
-            os.exit()
-
-        env_variables = variables['env_variables']
-        for var in env_variables:
-            os.environ[var] = env_variables[var]
+    if 'SQLALCHEMY_HOST' not in os.environ:
+        return None
 
     pool = sqlalchemy.create_engine(
         sqlalchemy.engine.url.URL(
-            drivername="mysql+pymysql",
-            username=os.environ.get('MYSQL_USER'),
-            password=os.environ.get('MYSQL_PASSWORD'),
-            database=os.environ.get('MYSQL_DB'),
-            host=os.environ.get('MYSQL_HOST')
-        )
+            drivername=os.environ.get('SQLALCHEMY_DRIVER', default="postgresql+psycopg2"),
+            host=os.environ.get('SQLALCHEMY_HOST'),
+            port=os.environ.get('SQLALCHEMY_PORT', default="5432"),
+            database=os.environ.get('SQLALCHEMY_DB'),
+            username=os.environ.get('SQLALCHEMY_USER'),
+            password=os.environ.get('SQLALCHEMY_PASSWORD'),
+        ), isolation_level="AUTOCOMMIT"  # turns on autocommit for all connections; not ideal, but ok for this demo
     )
-
     return pool
 
 
-app = Flask(__name__)
 db = init_connection_engine()
+if db is not None:
+    migrate.run_sql_migrations(db, "alembic")
+
+app = Flask(__name__)
 
 # To prevent from using a blueprint, we use a cyclic import
 # This also means that we need to place this import here

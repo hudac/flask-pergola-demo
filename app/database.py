@@ -1,16 +1,19 @@
 """Defines all the functions related to the database"""
+from typing import List, Dict, Any
+
 from app import db
 
-def fetch_todo() -> dict:
+
+def fetch_todo() -> List[Dict[str, Any]]:
     """Reads all tasks listed in the todo table
 
     Returns:
         A list of dictionaries
     """
 
-    conn = db.connect()
-    query_results = conn.execute("Select * from tasks;").fetchall()
-    conn.close()
+    with db.connect() as conn:
+        query_results = conn.execute("select * from tasks order by id;").fetchall()
+
     todo_list = []
     for result in query_results:
         item = {
@@ -34,10 +37,9 @@ def update_task_entry(task_id: int, text: str) -> None:
         None
     """
 
-    conn = db.connect()
-    query = 'Update tasks set task = "{}" where id = {};'.format(text, task_id)
-    conn.execute(query)
-    conn.close()
+    with db.connect() as conn:
+        query = 'update tasks set task = \'{}\' where id = {};'.format(text, task_id)
+        conn.execute(query)
 
 
 def update_status_entry(task_id: int, text: str) -> None:
@@ -51,13 +53,12 @@ def update_status_entry(task_id: int, text: str) -> None:
         None
     """
 
-    conn = db.connect()
-    query = 'Update tasks set status = "{}" where id = {};'.format(text, task_id)
-    conn.execute(query)
-    conn.close()
+    with db.connect() as conn:
+        query = 'update tasks set status = \'{}\' where id = {};'.format(text, task_id)
+        conn.execute(query)
 
 
-def insert_new_task(text: str) ->  int:
+def insert_new_task(text: str) -> int:
     """Insert new task to todo table.
 
     Args:
@@ -66,21 +67,17 @@ def insert_new_task(text: str) ->  int:
     Returns: The task ID for the inserted entry
     """
 
-    conn = db.connect()
-    query = 'Insert Into tasks (task, status) VALUES ("{}", "{}");'.format(
-        text, "Todo")
-    conn.execute(query)
-    query_results = conn.execute("Select LAST_INSERT_ID();")
-    query_results = [x for x in query_results]
-    task_id = query_results[0][0]
-    conn.close()
+    with db.connect() as conn:
+        query = 'insert into tasks (task, status) values (\'{}\', \'{}\') returning id;'.format(text, "Todo")
+        query_result = conn.execute(query)
+        query_result = [row for row in query_result]
+        task_id = query_result[0][0]
 
     return task_id
 
 
 def remove_task_by_id(task_id: int) -> None:
     """ remove entries based on task ID """
-    conn = db.connect()
-    query = 'Delete From tasks where id={};'.format(task_id)
-    conn.execute(query)
-    conn.close()
+    with db.connect() as conn:
+        query = 'delete from tasks where id={};'.format(task_id)
+        conn.execute(query)
