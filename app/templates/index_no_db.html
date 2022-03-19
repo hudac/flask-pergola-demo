@@ -4,5 +4,19 @@
 
 {% block content %}
     <div class="container">
+        <p>You need a Postgres DB up and running and following environment variables must be set for the application:</p>
+
+        <pre>
+        SQLALCHEMY_HOST
+        SQLALCHEMY_PORT
+        SQLALCHEMY_DB
+        SQLALCHEMY_USER
+        SQLALCHEMY_PASSWORD
+        </pre>
+
+        <p>
+            See <a target="_blank" href="https://github.com/datasophie/flask-pergola-demo#getting-started">Getting Started</a>
+            for details.
+        </p>
     </div>
 {% endblock %}
