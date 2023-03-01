@@ -1,5 +1,6 @@
 """Setup at app startup"""
 import os
+import time
 import sqlalchemy
 from flask import Flask
 from app import migrate
@@ -19,6 +20,17 @@ def init_connection_engine():
             password=os.environ.get('SQLALCHEMY_PASSWORD'),
         ), isolation_level="AUTOCOMMIT"  # turns on autocommit for all connections; not ideal, but ok for this demo
     )
+
+    initialized = False
+    while not initialized:
+        print("connecting to DB...")
+        try:
+            with pool.connect() as conn:
+                print("DB connected.")
+                initialized = True
+        except:
+            time.sleep(3)
+
     return pool
 
 

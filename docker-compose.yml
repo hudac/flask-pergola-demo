@@ -8,6 +8,7 @@ services:
       SQLALCHEMY_DB: flask-demo
       SQLALCHEMY_USER: flask-demo
       SQLALCHEMY_PASSWORD: flask-demo
+      PYTHONUNBUFFERED: "True"
     ports:
     - "5050:5050"
     depends_on:
@@ -24,5 +25,3 @@ services:
       interval: 2s
       timeout: 5s
       retries: 5
-    ports:
-    - "5432:5432"
