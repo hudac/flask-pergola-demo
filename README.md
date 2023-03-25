@@ -119,22 +119,14 @@ Whenever you have a new build, just issue `pergola push release`. Everything els
 `libpq-devel` on Centos/Fedora).
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-export FLASK_APP = app
-flask run
+flask --app app run --debug
 ```
 
 ### With Docker
 ```bash
-docker-compose build
-docker-compose up
+docker compose build
+docker compose up
 ```
-*Note:* Postgres needs some time to fully startup the first time. If you see an error like:
-```
-sqlalchemy.exc.OperationalError: (psycopg2.OperationalError) could not connect to server: Connection refused
-	Is the server running on host "flask-todo-db" (1.2.3.4) and accepting
-	TCP/IP connections on port 5432?
-```
-then just stop (press Ctrl+C) and restart via `docker-compose up`.

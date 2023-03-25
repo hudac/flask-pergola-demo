@@ -16,5 +16,6 @@ COPY alembic alembic
 COPY main.py main.py
 COPY insert_todo.py insert_todo.py
 
+ENV PYTHONUNBUFFERED="True"
 ENV FLASK_APP=app
 CMD flask run --host=0.0.0.0 --port 5050

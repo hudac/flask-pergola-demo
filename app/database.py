@@ -2,6 +2,7 @@
 from typing import List, Dict, Any
 
 from app import db
+from sqlalchemy import sql
 
 
 def fetch_todo() -> List[Dict[str, Any]]:
@@ -12,7 +13,7 @@ def fetch_todo() -> List[Dict[str, Any]]:
     """
 
     with db.connect() as conn:
-        query_results = conn.execute("select * from tasks order by id;").fetchall()
+        query_results = conn.execute(sql.text("select * from tasks order by id")).fetchall()
 
     todo_list = []
     for result in query_results:
@@ -38,8 +39,8 @@ def update_task_entry(task_id: int, text: str) -> None:
     """
 
     with db.connect() as conn:
-        query = 'update tasks set task = \'{}\' where id = {};'.format(text, task_id)
-        conn.execute(query)
+        stmt = sql.text("update tasks set task = :task where id = :task_id")
+        conn.execute(stmt.bindparams(task=text, task_id=task_id))
 
 
 def update_status_entry(task_id: int, text: str) -> None:
@@ -54,8 +55,8 @@ def update_status_entry(task_id: int, text: str) -> None:
     """
 
     with db.connect() as conn:
-        query = 'update tasks set status = \'{}\' where id = {};'.format(text, task_id)
-        conn.execute(query)
+        stmt = sql.text("update tasks set status = :status where id = :task_id")
+        conn.execute(stmt.bindparams(status=text, task_id=task_id))
 
 
 def insert_new_task(text: str) -> int:
@@ -68,8 +69,8 @@ def insert_new_task(text: str) -> int:
     """
 
     with db.connect() as conn:
-        query = 'insert into tasks (task, status) values (\'{}\', \'{}\') returning id;'.format(text, "Todo")
-        query_result = conn.execute(query)
+        stmt = sql.text("insert into tasks (task, status) values (:task, :status) returning id")
+        query_result = conn.execute(stmt.bindparams(task=text, status="Todo"))
         query_result = [row for row in query_result]
         task_id = query_result[0][0]
 
@@ -79,5 +80,5 @@ def insert_new_task(text: str) -> int:
 def remove_task_by_id(task_id: int) -> None:
     """ remove entries based on task ID """
     with db.connect() as conn:
-        query = 'delete from tasks where id={};'.format(task_id)
-        conn.execute(query)
+        stmt = sql.text("delete from tasks where id = :task_id")
+        conn.execute(stmt.bindparams(task_id=task_id))
