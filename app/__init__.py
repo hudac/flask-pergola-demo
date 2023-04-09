@@ -11,7 +11,7 @@ def init_connection_engine():
         return None
 
     pool = sqlalchemy.create_engine(
-        sqlalchemy.engine.url.URL(
+        url = sqlalchemy.engine.URL.create(
             drivername=os.environ.get('SQLALCHEMY_DRIVER', default="postgresql+psycopg2"),
             host=os.environ.get('SQLALCHEMY_HOST'),
             port=os.environ.get('SQLALCHEMY_PORT', default="5432"),
