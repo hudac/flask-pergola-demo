@@ -1,4 +1,4 @@
-FROM python:3.8.19-slim
+FROM python:3.12-slim
 
 RUN apt-get update -y && \
     apt-get install -y gcc libpq-dev && \
