@@ -1,4 +1,3 @@
-version: '3'
 services:
   flask-todo-web:
     build: .
@@ -15,7 +14,7 @@ services:
     - flask-todo-db
 
   flask-todo-db:
-    image: postgres:14.12
+    image: postgres:14.13
     environment:
       POSTGRES_USER: flask-demo
       POSTGRES_PASSWORD: flask-demo
