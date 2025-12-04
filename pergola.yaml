@@ -22,7 +22,7 @@ components:
 
 - name: todo-db
   docker:
-    image: postgres:14.13
+    image: postgres:14.20
   env:
   - name: POSTGRES_DB
     value: flask-demo

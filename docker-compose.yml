@@ -14,7 +14,7 @@ services:
     - flask-todo-db
 
   flask-todo-db:
-    image: postgres:14.13
+    image: postgres:14.20
     environment:
       POSTGRES_USER: flask-demo
       POSTGRES_PASSWORD: flask-demo
