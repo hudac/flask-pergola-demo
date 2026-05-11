@@ -79,35 +79,37 @@ git push
 ### Setup project and push first release to Pergola
 *Note:* For public repositories use the `https` Git url.
 ```bash
-# project: pergola-demo-todo-app
-pergola create project pergola-demo-todo-app \
+# new project
+PROJECT_ID="todo-app-demo-$(openssl rand -hex 2)"
+
+pergola create project $PROJECT_ID \
   --display-name "Pergola Demo ToDo App" \
   --git-url "https://github.com/hudac/flask-pergola-demo.git"
 
 # trigger a build manually, we don't want to wait
-pergola push build -p pergola-demo-todo-app
+pergola push build -p $PROJECT_ID
 
 # stage: dev
-pergola create stage dev --type dev -p pergola-demo-todo-app
+pergola create stage dev --type dev -p $PROJECT_ID
 
 # add configuration: default
 # to stage: dev
 # hint: generate a password if you don't need to know it upfront (and avoids leaving a trace in shell history)
-pergola add config-data default -s dev -p pergola-demo-todo-app \
+pergola add config-data default -s dev -p $PROJECT_ID \
   --env DB_USER=flask-demo \
   --env DB_PASS=$(cat /dev/urandom | env LC_ALL=C tr -dc '[:alnum:]' | head -c21)
 
 # check if newest build is ready
-pergola list build -p pergola-demo-todo-app
+pergola list build -p $PROJECT_ID
 
 # push a new release
 # build: main_b1 (assuming main_b1 is the newest)
 # with config: default
 # to stage: dev
-pergola push release -b main_b1 -c default -s dev -p pergola-demo-todo-app
+pergola push release -b main_b1 -c default -s dev -p $PROJECT_ID
 
 # check running application and open generated url
-pergola list component -s dev -p pergola-demo-todo-app
+pergola list component -s dev -p $PROJECT_ID
 ```
 
 Whenever you have a new build, just issue `pergola push release`. Everything else is already setup.
